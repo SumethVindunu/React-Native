@@ -2,6 +2,9 @@ import { StyleSheet, Text, View,TextInput,TouchableOpacity } from 'react-native'
 import React from 'react';
 import { Formik } from 'formik';
 import * as Yup from "yup";
+import { useMutation } from '@tanstack/react-query';
+import { registerUser } from "../(services)/api/api";
+
 
 
 const validationSchema = Yup.object().shape({
@@ -13,14 +16,40 @@ const validationSchema = Yup.object().shape({
   });
 
 const register = () => {
+  const mutation =useMutation({
+    mutationFn: registerUser,
+    mutationKey:['login']
+  });
+  console.log("mutation",mutation)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
       {/* Formik */}
       <Formik
       initialValues={{email:"",password:"",password:""}}
-      onSubmit={(values)=>console.log(values)}
+      
       validationSchema={validationSchema}
+      onSubmit={(values) => {
+        const data = {
+          email: values.email,
+          password: values.password,
+        };
+        mutation
+          .mutateAsync(data)
+          .then(() => {
+            mutation.mutateAsync(values)
+              .then((data) => {
+                console.log("data", data);
+                // dispatch(loginAction(data));
+              })
+              .catch((err) => {
+                // console.log(err);
+              });
+          })
+          .catch((error) => {
+            // console.log(error);
+          });
+      }}
       >
         {({
              handleChange,

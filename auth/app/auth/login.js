@@ -2,6 +2,9 @@ import { StyleSheet, Text, View,TextInput,TouchableOpacity } from 'react-native'
 import React from 'react';
 import { Formik } from 'formik';
 import * as Yup from "yup";
+import {useRouter} from "expo-router";
+import { useMutation } from '@tanstack/react-query';
+import { loginUser } from "../(services)/api/api";
 
 
 const validationSchema = Yup.object().shape({
@@ -10,13 +13,40 @@ const validationSchema = Yup.object().shape({
   });
 
 const login = () => {
+  //Router
+  const router = useRouter();
+  const mutation =useMutation({
+    mutationFn: loginUser,
+    mutationKey:['login']
+  });
+  console.log("mutation",mutation);
   return (
     <View style={styles.container}>
       <Text style={styles.title}>login</Text>
       {/* Formik */}
       <Formik
-      initialValues={{email:"",password:""}}
-      onSubmit={(values)=>console.log(values)}
+      initialValues={{email:"sumeth@gmail.com",password:"123456"}}
+      onSubmit={(values)=>{
+        console.log("values",values);
+        // mutation
+        //     .mutateAsync(values)
+        //     .then((data) => {
+        //       //call mutation
+        //       mutation.mutateAsync(values)
+        //       .then((data) => {
+        //         console.log("data", data);
+        //         // dispatch(loginAction(data));
+        //       })
+        //       .catch((err) => {
+        //         // console.log(err);
+        //       });
+              
+        //     })
+        //     .catch((err) => {
+        //       // console.log(err);
+        //     });
+        router.push("/(tabs)")
+      }}
       validationSchema={validationSchema}
       >
         {({
